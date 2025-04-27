@@ -6,61 +6,78 @@ using System.Threading.Tasks;
 
 namespace Lab_8
 {
-    public class Green_4 : Green 
+    public class Green_4 : Green
     {
-        private string[] _output; 
-        private string _input; 
-        public string[] Output => _output; 
+        private string[] _output;
+        public string[] Output => _output;
 
-        public Green_4(string i) : base(i) 
+        public Green_4(string input) : base(input)
         {
-            _input = i;
             _output = null;
         }
+
         public override void Review()
-
         {
-            string[] surname;
-            string[] part = _input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            surname = new string[part.Length];
-
-            for (int i = 0; i < part.Length; i++)
+            if (Input == null || Input.Length == 0)
             {
-                surname[i] = part[i].Trim();
+                _output = new string[0];
+                return;
             }
-            bool swap;
-            do
+            string[] s = Input.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            for (int j = 0; j < s.Length; ++j)
             {
-                swap = false;
-                for (int i = 0; i < surname.Length-1; i++)
+                for (int i = j + 1; i < s.Length; ++i)
                 {
-                    if (CompareStrings(surname[i], surname[i+1]) > 0)
+                    string first = s[j].ToLower();
+                    string second = s[i].ToLower();
+                    int k = 0;
+
+                    int minimal_len = Math.Min(s[j].Length, s[i].Length);
+                    for (int g = 0; g < minimal_len; g++)
                     {
-                        string t = surname[i];
-                        surname[i] = surname[i+1];
-                        surname[i + 1] = t;
-                        swap = true;
+                        if (first[g] != second[g])
+                        {
+                            if (first[g] > second[g])
+                            {
+                                (s[j], s[i]) = (s[i], s[j]);
+                            }
+                            break;
+                        }
+                        k++;
+                    }
+
+                    if (k == minimal_len)
+                    {
+                        if (s[j].Length > s[i].Length)
+                        {
+                            string temp = s[j];
+                            s[j] = s[i];
+                            s[i] = temp;
+                        }
                     }
                 }
-            } while (swap);
-            _output = surname;
-        }
-
-        private int CompareStrings(string a, string b)
-        {
-            int minlen = Math.Min(a.Length, b.Length);
-            for (int i = 0; i < minlen; i++)
-            {
-                if (a[i] != b[i]) return Math.Sign(a[i] - b[i]);
             }
-            return Math.Sign(a.Length - b.Length);
+            _output = s;
         }
 
-        public override string ToString() 
+        public override string ToString()
         {
-            return Output == null || Output.Length == 0
-                ? string.Empty
-                : string.Join(Environment.NewLine, Output);
+            if (_output == null || _output.Length == 0)
+            {
+                return "";
+            }
+            string res = "";
+
+            for (int i = 0; i < _output.Length; i++)
+            {
+                res += $"{_output[i]}";
+                if (i < _output.Length - 1)
+                {
+                    res += Environment.NewLine;
+                }
+            }
+            return res;
         }
     }
 
